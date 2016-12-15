@@ -4,6 +4,7 @@
 /* CLASS.ADMIN.PHP
 /* The option options page. */
 
+if (!defined('ABSPATH')) die('opa');
 
 class IpLocAdmin {
     /**
@@ -79,6 +80,7 @@ class IpLocAdmin {
             'iploc8_redir', // Option name
             array( $this, 'validate_redir' ) // Sanitize
         );
+        
 		// register sections per page
         add_settings_section(
             'iploc8_section_1', // ID
@@ -92,6 +94,7 @@ class IpLocAdmin {
             array( $this, 'empty_section_info' ), // Callback
             'iploc8_settings' // Page
         );
+        
 		// register settings fields per section and page
         add_settings_field(
             'iploc8_key', // ID
@@ -133,14 +136,6 @@ class IpLocAdmin {
      * @param array $input Contains all settings fields as array keys
      */
     public function sanitize( $input ) { 
-        $new_input = array();
-        if( isset( $input['id_number'] ) )
-            $new_input['id_number'] = absint( $input['id_number'] );
-
-        if( isset( $input['title'] ) )
-            $new_input['title'] = sanitize_text_field( $input['title'] );
-
-        // return $new_input;
         return $input;
     }
 
@@ -157,7 +152,7 @@ class IpLocAdmin {
     public function input_text($args) {
     	$option = $this->extract_option_data($args);
 		// Render the output
-		echo '<input type="text" id="'. $option['id'] .'" name="'. $option['name'] .'" value="'.stripslashes(esc_attr( $option['value'] )).'" />';
+		echo '<input type="text" id="'. $option['id'] .'" name="'. $option['name'] .'" value="'.stripslashes(esc_attr( $option['value'] )).'" class="long-text" />';
 		echo '<br /><small><label for="'.$option['id'].'">'. $args[0] .'</label></small>'; 
     }
 
@@ -228,19 +223,5 @@ class IpLocAdmin {
 		return $newinput;
 	}
 	
-	public function validate_options( $input ) {
-		// Create our array for storing the validated options
-		$output = array();
-		// Loop through each of the incoming options
-		foreach( $input as $key => $value ) {
-			// Check to see if the current option has a value. If so, process it.
-			if( isset( $input[$key] ) ) {
-				// Strip all HTML and PHP tags and properly handle quoted strings
-				$output[$key] = strip_tags( stripslashes( $input[ $key ] ) );
-			} // end if
-		} // end foreach
-		// Return the array processing any additional functions filtered by this action
-		return apply_filters( 'kosher_validate_options', $output, $input );
-	}
 
 }
