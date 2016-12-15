@@ -4,17 +4,20 @@
 /* CLASS.LOCATE.PHP
 /* Gets the location based on IP. */
 
+if (!defined('ABSPATH')) die('opa');
+
 // if giving bad results use http://api.geoiplookup.net/?query=5.53.169.1 
 
 // former ip2location_lite
 final class IpLocLocator {
+
 	protected $errors = array();
 	protected $settings = array();
 	protected $redirects = array();
 	protected $service = 'api.ipinfodb.com';
 	protected $version = 'v3';
 	protected $apiKey = '';
-
+	
     /**
      * Construct
      */
@@ -37,7 +40,7 @@ final class IpLocLocator {
 	public function setData(){
 		$data = array();
 		$visitorGeolocation = $this->getResult($_SERVER['REMOTE_ADDR']);
-		if ($visitorGeolocation['statusCode'] == 'OK') {
+		if ($visitorGeolocation['statusCode'] == 'OK') { 
 			if ($this->settings['precision']=='1') {
 				$data = array(
 					'code'		=> $visitorGeolocation['countryCode'],
@@ -62,14 +65,28 @@ final class IpLocLocator {
 		return $data;
 	}
 	
-	public function redirect(){
-		if (!empty($this->code)) {
+	/*
+	* Runs country related things upon user first page load
+	* 
+	*
+	*/
+	public function welcome(){
+	
+		if (!empty($this->code)) { 
+			// Qtranslate language switcher - adds filter, only run if qtranslate is installed
 			add_filter( 'qtranslate_detect_language', array($this,'set_qtranslate_language'), 10, 1);
-			do_action( 'iploc8_set_country', $this->code ); // action for other plugins to use, only run upon user first visit... 
-			define('IPLOC8NEW',$this->code); // GLOBAL with user country, only set upon user's first visit for use in themes...
+			// adds an action for use in other plugins and themes
+			do_action( 'iploc8_set_country', $this->code ); 
+			// defines a global for other plugins and themese to check if it's user's first visit
+			define('IPLOC8NEW',$this->code);
 		}
 	}
 	
+	/*
+	* Sets QTranslate language
+	* Checks if current country is set in settings, otherwise sets the default language
+	*
+	*/
 	public function set_qtranslate_language($url_info) { 
 		$this->redirects = get_option( 'iploc8_redir','' );
 		if (!empty($this->redirects)) { 
@@ -130,6 +147,7 @@ final class IpLocLocator {
 		$this->errors[] = '"' . $host . '" is not a valid IP address or hostname.';
 		return;
 	}
+	
 	private function curl_get_contents($url) {
 		$ch = curl_init();
 
@@ -138,7 +156,9 @@ final class IpLocLocator {
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	    curl_setopt($ch, CURLOPT_URL, $url);
 	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);       
-	
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,2); 
+		curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+		
 	    $data = curl_exec($ch);
 	    curl_close($ch);
 	

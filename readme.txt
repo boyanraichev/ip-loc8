@@ -4,11 +4,11 @@ Donate link: http://talkingaboutthis.eu/
 Tags: ip geolocation, geolocation, qtranslate
 Requires at least: 4.0.0
 Tested up to: 4.6.1
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin finds the country and city of the user by the IP address and saves the info in a cookie and a global php variable. Furthermore, for sites using qTranslate X for multilanguage, it can set the language of the site upon the user’s first visit, using country-based rules that you set up in the plugin options.
+This plugin finds the country and city of the user by the IP address and saves the info in a cookie and in the session. Furthermore, for sites using qTranslate X for multilanguage, it can set the language of the site upon the user’s first visit, using country-based rules that you set up in the plugin options.
 
 == Description ==
 
@@ -16,13 +16,15 @@ This plugin would figure out a user location (country and city, but have in mind
 
 Furthermore, for sites using qTranslate X for multilanguage, it can set the language of the site upon the user’s first visit, using country-based rules that you set up in the plugin options. Normally qTranslate X offers automatic setting of language based on the browser language, but in many countries browser localisation is not as popular and a lot of people use english language browsers, so this method is not reliable and some people would prefer to set the language based on the user’s country.
 
-This plugin does not do much on its own (except for the integration with qTranslate) - it provides valuable data to be integrated with other code on your website. The idea behind it is to have a fast, simple and reliable tool for getting location, which could be used on a per-need basis. The plugin loads no scripts and no stylesheets and uses class autoloading to load its code only when it's acutally needed.
+This plugin does not do much on its own (except for the integration with qTranslate) - it provides valuable data to be integrated with other code on your website. The idea behind it is to have a fast, simple and reliable tool for getting location, which could be used on a per-need basis. The plugin loads no scripts and no stylesheets and uses class autoloading to load its code only when it's actually needed.
+
+It also does its best to recognize robots, crawlers and content fetchers and only run for regular site visitors.
 
 Future verions will also provide a tool for precise geolocation, using the user’s GPS and WiFi data (html5 geolocation).
 
 = Features =
 
-* Automatically gets country and city by IP address and saves it in a cookie
+* Automatically gets country and city by IP address and saves it in a cookie and a global variable
 * Possible qTranslate X language setting based on country, upon first visit
 * Ability to get precise geolocation information by asking for user permissions and using his GPS and WiFi data
 
@@ -34,6 +36,10 @@ This plugin needs cURL PHP extension! PHP sessions should also work properly on 
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 
 == Frequently Asked Questions ==
+
+= The plugin does not work! =
+
+If the plugin does not seem to locate the country the problem might be a connection timeout. The curl connection timeout is conservatively set to 2 seconds for CURLOPT_CONNECTTIMEOUT and 4 seconds for CURLOPT_TIMEOUT, so that the page loading time is not severely delayed when the servers are not responding. Still, in most cases this should be enough. If you experience timeouts often write on GitHub or the WordPress support forums and the limits will be reconsidered. 
 
 = How long does the cookie remain in the browser? =
 
@@ -54,11 +60,17 @@ If you want to do some additional things upon first page load (set currency in y
 
 == Changelog ==
 
+= 1.1 =
+* Updated code
+
 = 1.0 =
 * First release
 
 
 == Upgrade Notice ==
+
+= 1.1 =
+* Updated code
 
 = 1.0 =
 First release
